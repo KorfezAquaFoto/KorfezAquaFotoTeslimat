@@ -9,13 +9,13 @@
         body { background: #0b1528; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; text-align: center; }
         .logo-box { margin-top: 10px; margin-bottom: 15px; }
         .logo-box img { max-width: 220px; height: auto; display: block; margin: 0 auto; }
-        .header p { font-size: 13px; color: #88a0c0; margin-bottom: 15px; }
         .card { background: #16243d; border-radius: 16px; padding: 15px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #233758; }
         .img-container { width: 100%; border-radius: 12px; overflow: hidden; background: #0a101d; min-height: 250px; display: flex; align-items: center; justify-content: center; position: relative; }
         .img-container img { width: 100%; height: auto; display: block; border-radius: 12px; }
         .loading { font-size: 14px; color: #00d2ff; }
         .btn-indir { display: block; width: 100%; margin-top: 18px; padding: 14px; background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; text-decoration: none; font-size: 15px; font-weight: bold; border-radius: 10px; cursor: pointer; border: none; }
-        .kvkk-info { margin-top: 12px; font-size: 11px; color: #ffaa55; line-height: 1.4; }
+        .btn-indir:active { opacity: 0.9; }
+        .kvkk-info { margin-top: 14px; font-size: 11px; color: #ffaa55; line-height: 1.4; }
         .footer { margin-top: auto; padding-top: 20px; font-size: 12px; color: #526b88; }
     </style>
 </head>
@@ -32,7 +32,7 @@
         </div>
         
         <button id="indirBtn" class="btn-indir" style="display: none;">Fotoğrafınızı İndirmek İçin Tıklayın</button>
-        
+
         <div class="kvkk-info">
             🔒 KVKK ve veri güvenliği gereği fotoğrafınız 1 saat sonra sistemden kalıcı olarak silinecektir.
         </div>
@@ -64,14 +64,25 @@
                 durum.innerText = "Fotoğraf süresi (1 saat) dolduğu için silinmiş veya link geçersiz.";
             };
 
-            // Butona basıldığında yeni sekmeye atmadan DOĞRUDAN TELEFONA İNDİRME
             indirBtn.addEventListener('click', async function() {
-                indirBtn.innerText = "İndiriliyor...";
+                indirBtn.innerText = "İşleniyor...";
+                
                 try {
                     const response = await fetch(tamFotoUrl);
                     const blob = await response.blob();
+                    const file = new File([blob], 'korfez_aqua_hatira.jpg', { type: 'image/jpeg' });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Körfez Aqua Hatıra Fotoğrafı',
+                            text: 'Körfez Aqua Kıtalar Akvaryumu Hatıranız'
+                        });
+                        indirBtn.innerText = "Fotoğrafınızı İndirmek İçin Tıklayın";
+                        return;
+                    }
+
                     const blobUrl = window.URL.createObjectURL(blob);
-                    
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = blobUrl;
@@ -80,12 +91,13 @@
                     a.click();
                     window.URL.revokeObjectURL(blobUrl);
                     a.remove();
-                    
+
                     indirBtn.innerText = "Fotoğraf İndirildi ✓";
                     setTimeout(() => { indirBtn.innerText = "Fotoğrafınızı İndirmek İçin Tıklayın"; }, 2500);
+
                 } catch (e) {
-                    // Tarayıcı güvenlik kısıtlaması olursa yedek direkt link
                     window.location.href = tamFotoUrl;
+                    indirBtn.innerText = "Fotoğrafınızı İndirmek İçin Tıklayın";
                 }
             });
 
