@@ -51,9 +51,6 @@
         const durum = document.getElementById('durumYazisi');
         const indirBtn = document.getElementById('indirBtn');
 
-        // Sadece Apple/iOS cihaz kontrolü
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
         if (fotoAdi) {
             const tamFotoUrl = SUPABASE_STORAGE_URL + fotoAdi;
 
@@ -68,26 +65,23 @@
             };
 
             indirBtn.addEventListener('click', async function() {
-                indirBtn.innerText = "İndiriliyor...";
+                indirBtn.innerText = "İşleniyor...";
                 
                 try {
                     const response = await fetch(tamFotoUrl);
                     const blob = await response.blob();
+                    const file = new File([blob], 'korfez_aqua_hatira.jpg', { type: 'image/jpeg' });
 
-                    // 1. DURUM: Eğer cihaz iPhone ise Paylaş/Galeri menüsünü aç
-                    if (isIOS) {
-                        const file = new File([blob], 'korfez_aqua_hatira.jpg', { type: 'image/jpeg' });
-                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                            await navigator.share({
-                                files: [file],
-                                title: 'Körfez Aqua Hatıra Fotoğrafı'
-                            });
-                            indirBtn.innerText = "Fotoğrafınızı İndirmek İçin Tıklayın";
-                            return;
-                        }
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Körfez Aqua Hatıra Fotoğrafı',
+                            text: 'Körfez Aqua Kıtalar Akvaryumu Hatıranız'
+                        });
+                        indirBtn.innerText = "Fotoğrafınızı İndirmek İçin Tıklayın";
+                        return;
                     }
 
-                    // 2. DURUM: Android ve diğer tüm cihazlar için DOĞRUDAN İNDİRME
                     const blobUrl = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.style.display = 'none';
