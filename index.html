@@ -7,43 +7,43 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: #0b1528; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; text-align: center; }
-        .header { margin-top: 15px; margin-bottom: 20px; }
-        .header h1 { font-size: 24px; color: #00d2ff; letter-spacing: 1px; }
-        .header p { font-size: 14px; color: #88a0c0; margin-top: 4px; }
+        .logo-box { margin-top: 10px; margin-bottom: 15px; }
+        .logo-box img { max-width: 220px; height: auto; display: block; margin: 0 auto; }
+        .header p { font-size: 13px; color: #88a0c0; margin-bottom: 15px; }
         .card { background: #16243d; border-radius: 16px; padding: 15px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #233758; }
         .img-container { width: 100%; border-radius: 12px; overflow: hidden; background: #0a101d; min-height: 250px; display: flex; align-items: center; justify-content: center; position: relative; }
         .img-container img { width: 100%; height: auto; display: block; border-radius: 12px; }
-        .loading { font-size: 14px; color: #00d2ff; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-        .btn-indir { display: block; width: 100%; margin-top: 18px; padding: 14px; background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4); transition: transform 0.2s; }
-        .btn-indir:active { transform: scale(0.98); }
-        .footer { margin-top: auto; padding-top: 25px; font-size: 12px; color: #526b88; }
+        .loading { font-size: 14px; color: #00d2ff; }
+        .btn-indir { display: block; width: 100%; margin-top: 18px; padding: 14px; background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; text-decoration: none; font-size: 15px; font-weight: bold; border-radius: 10px; cursor: pointer; border: none; }
+        .kvkk-info { margin-top: 12px; font-size: 11px; color: #ffaa55; line-height: 1.4; }
+        .footer { margin-top: auto; padding-top: 20px; font-size: 12px; color: #526b88; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>KÖRFEZ AQUA</h1>
-        <p>Kıtalar Akvaryumu Hatıranız</p>
+    <div class="logo-box">
+        <img src="https://raw.githubusercontent.com/KorfezAquaFoto/korfez-aqua-foto/main/logo.png" alt="Körfez Aqua Logo" onerror="this.style.display='none'">
     </div>
 
     <div class="card">
         <div class="img-container" id="imgBox">
-            <span class="loading" id="durumYazisi">Fotoğrafınız yükleniyor...</span>
+            <span class="loading" id="durumYazisi">Fotoğrafınız hazırlanıyor...</span>
             <img id="fotoGorsel" src="" style="display: none;" alt="Hatıra Fotoğrafı">
         </div>
-        <a href="#" id="indirBtn" class="btn-indir" style="display: none;" download="korfez_aqua_hatira.jpg">HD Fotoğrafı İndir</a>
+        
+        <button id="indirBtn" class="btn-indir" style="display: none;">Fotoğrafınızı İndirmek İçin Tıklayın</button>
+        
+        <div class="kvkk-info">
+            🔒 KVKK ve veri güvenliği gereği fotoğrafınız 1 saat sonra sistemden kalıcı olarak silinecektir.
+        </div>
     </div>
 
     <div class="footer">
-        Kocaeli Büyükşehir Belediyesi
+        Kocaeli Büyükşehir Belediyesi - Kıtalar Akvaryumu
     </div>
 
     <script>
-        // Supabase Klasör Linki
         const SUPABASE_STORAGE_URL = "https://rbizktumazoxkiklyenv.supabase.co/storage/v1/object/public/fotolar/";
-
-        // URL'den gelen ?foto= dosya adını al
         const urlParams = new URLSearchParams(window.location.search);
         const fotoAdi = urlParams.get('foto');
 
@@ -54,19 +54,43 @@
         if (fotoAdi) {
             const tamFotoUrl = SUPABASE_STORAGE_URL + fotoAdi;
 
-            // Fotoğrafı yükle ve ekranda göster
             gorsel.src = tamFotoUrl;
             gorsel.onload = function() {
                 durum.style.display = "none";
                 gorsel.style.display = "block";
-                indirBtn.href = tamFotoUrl;
                 indirBtn.style.display = "block";
             };
             gorsel.onerror = function() {
-                durum.innerText = "Fotoğraf henüz hazır değil veya süresi dolmuş. Lütfen sayfayı yenileyin.";
+                durum.innerText = "Fotoğraf süresi (1 saat) dolduğu için silinmiş veya link geçersiz.";
             };
+
+            // Butona basıldığında yeni sekmeye atmadan DOĞRUDAN TELEFONA İNDİRME
+            indirBtn.addEventListener('click', async function() {
+                indirBtn.innerText = "İndiriliyor...";
+                try {
+                    const response = await fetch(tamFotoUrl);
+                    const blob = await response.blob();
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = blobUrl;
+                    a.download = 'korfez_aqua_hatira.jpg';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(blobUrl);
+                    a.remove();
+                    
+                    indirBtn.innerText = "Fotoğraf İndirildi ✓";
+                    setTimeout(() => { indirBtn.innerText = "Fotoğrafınızı İndirmek İçin Tıklayın"; }, 2500);
+                } catch (e) {
+                    // Tarayıcı güvenlik kısıtlaması olursa yedek direkt link
+                    window.location.href = tamFotoUrl;
+                }
+            });
+
         } else {
-            durum.innerText = "Geçersiz veya eksik fotoğraf linki.";
+            durum.innerText = "Geçersiz fotoğraf bağlantısı.";
         }
     </script>
 </body>
