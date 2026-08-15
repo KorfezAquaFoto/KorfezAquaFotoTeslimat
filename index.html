@@ -15,50 +15,38 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px 16px;
+      padding: 20px 16px;
       text-align: center;
       position: relative;
       overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: absolute;
-      top: -30%;
-      left: 50%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(72, 202, 228, 0.18), transparent 70%);
-      transform: translateX(-50%);
-      pointer-events: none;
     }
 
     .card {
       background: rgba(13, 27, 49, 0.88);
       border: 1px solid rgba(72, 202, 228, 0.25);
       backdrop-filter: blur(14px);
-      padding: 28px 22px;
+      padding: 24px 18px;
       border-radius: 28px;
       max-width: 440px;
       width: 100%;
-      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 119, 182, 0.15);
+      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.7);
       position: relative;
       z-index: 1;
     }
 
     .brand-logo {
-      max-width: 220px;
+      max-width: 200px;
       height: auto;
-      margin: 0 auto 18px auto;
+      margin: 0 auto 14px auto;
       display: block;
       filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
     }
 
     .welcome-text {
-      font-size: 13.5px;
-      color: #cbd5e1;
+      font-size: 14px;
+      color: #e2e8f0;
       line-height: 1.4;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .img-container {
@@ -68,7 +56,7 @@
       overflow: hidden;
       background: #020617;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-      margin-bottom: 18px;
+      margin-bottom: 14px;
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
@@ -79,47 +67,46 @@
       -webkit-touch-callout: default;
     }
 
-    .ios-tip {
+    /* iPhone Özel Rehber Kutucuğu */
+    .ios-box {
       display: none;
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px dashed rgba(56, 189, 248, 0.5);
-      color: #e0f2fe;
-      padding: 12px 14px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px dashed #38bdf8;
       border-radius: 14px;
-      font-size: 12.5px;
-      line-height: 1.5;
-      margin-bottom: 16px;
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: #e0f2fe;
+      line-height: 1.4;
       text-align: left;
     }
-    .ios-tip strong { color: #38bdf8; }
 
-    .btn-download {
-      display: none;
+    .btn-action {
+      display: block;
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       background: linear-gradient(135deg, #0077b6, #0096c7, #38bdf8);
       color: #fff;
       border: none;
       border-radius: 14px;
-      font-size: 15.5px;
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: 0.5px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.35);
+      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
       transition: transform 0.15s ease;
     }
-    .btn-download:active { transform: scale(0.98); }
+    .btn-action:active { transform: scale(0.98); }
 
     .footer-section {
-      margin-top: 18px;
-      padding-top: 14px;
+      margin-top: 16px;
+      padding-top: 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     .footer-slogan {
       font-size: 12px;
       color: #90e0ef;
       font-weight: 500;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .kvkk-info {
       font-size: 11px;
@@ -143,15 +130,16 @@
     <p class="welcome-text">Hatıra fotoğrafınız hazır!</p>
 
     <div id="content">
-      <div id="iosTip" class="ios-tip">
-        📲 <strong>iPhone Kullanıcıları:</strong> Fotoğrafın üzerine <strong>basılı tutarak</strong> çıkan menüden <strong>"Fotoğraflara Ekle"</strong>yi seçebilirsiniz.
-      </div>
-
       <div class="img-container">
         <img id="photo" src="" alt="Hatıra Fotoğrafı">
       </div>
 
-      <button id="androidBtn" class="btn-download">Fotoğrafı İndir</button>
+      <div id="iosBox" class="ios-box">
+        💡 <strong>iPhone Galeriye Kaydetme:</strong><br>
+        Aşağıdaki butona basıp açılan menüden <strong>"Görüntüyü Kaydet"</strong> seçeneğine tıklayın.
+      </div>
+
+      <button id="saveBtn" class="btn-action">Fotoğrafı Galeriye Kaydet</button>
 
       <div class="footer-section">
         <div class="footer-slogan">Bizi ziyaret ettiğiniz için teşekkür ederiz. 🌊</div>
@@ -171,8 +159,8 @@
     if (imgUrl) {
       const decodedUrl = decodeURIComponent(imgUrl);
       const photoEl = document.getElementById('photo');
-      const iosTip = document.getElementById('iosTip');
-      const androidBtn = document.getElementById('androidBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const iosBox = document.getElementById('iosBox');
 
       photoEl.src = decodedUrl;
 
@@ -180,16 +168,26 @@
                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
       if (isIOS) {
-        iosTip.style.display = 'block';
-      } else {
-        androidBtn.style.display = 'block';
-        androidBtn.onclick = async () => {
-          try {
-            androidBtn.innerText = "İndiriliyor...";
-            const res = await fetch(decodedUrl);
-            const blob = await res.blob();
+        iosBox.style.display = 'block';
+      }
+
+      saveBtn.onclick = async () => {
+        try {
+          saveBtn.innerText = "Hazırlanıyor...";
+          saveBtn.disabled = true;
+
+          const response = await fetch(decodedUrl);
+          const blob = await response.blob();
+          const file = new File([blob], 'HatiraFoto.jpg', { type: 'image/jpeg' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: 'Hatıra Fotoğrafı'
+            });
+            saveBtn.innerText = "Fotoğraf Kaydedildi! ✨";
+          } else {
             const blobUrl = window.URL.createObjectURL(blob);
-            
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = 'HatiraFoto.jpg';
@@ -197,12 +195,18 @@
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(blobUrl);
-            androidBtn.innerText = "Fotoğraf İndirildi! ✨";
-          } catch (e) {
+            saveBtn.innerText = "Fotoğraf İndirildi! ✨";
+          }
+        } catch (err) {
+          if (err.name !== 'AbortError') {
             window.open(decodedUrl, '_blank');
           }
-        };
-      }
+          saveBtn.innerText = "Fotoğrafı Galeriye Kaydet";
+        } finally {
+          saveBtn.disabled = false;
+        }
+      };
+
     } else {
       document.getElementById('content').style.display = 'none';
       document.getElementById('errorMsg').style.display = 'block';
