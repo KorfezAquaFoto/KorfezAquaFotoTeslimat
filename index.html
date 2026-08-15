@@ -21,7 +21,6 @@
       overflow-x: hidden;
     }
 
-    /* Su altı ışık huzmesi efekti */
     body::before {
       content: '';
       position: absolute;
@@ -53,22 +52,16 @@
       z-index: 1;
     }
 
-    .logo-tag {
-      display: inline-block;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #00b4d8;
-      background: rgba(0, 180, 216, 0.12);
-      padding: 5px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(0, 180, 216, 0.3);
-      margin-bottom: 10px;
-      font-weight: 600;
+    .brand-logo {
+      max-width: 170px;
+      height: auto;
+      margin: 0 auto 12px auto;
+      display: block;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
     }
 
     h1 {
-      font-size: 26px;
+      font-size: 24px;
       background: linear-gradient(135deg, #ffffff, #90e0ef, #48cae4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -90,14 +83,13 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    img {
+    img#photo {
       width: 100%;
       height: auto;
       display: block;
       -webkit-touch-callout: default;
     }
 
-    /* iOS Rehber Kutusu */
     .ios-tip {
       display: none;
       background: rgba(72, 202, 228, 0.1);
@@ -112,7 +104,6 @@
     }
     .ios-tip strong { color: #38bdf8; }
 
-    /* Android & PC İndirme Butonu */
     .btn-download {
       display: none;
       width: 100%;
@@ -129,7 +120,6 @@
     }
     .btn-download:active { transform: scale(0.98); }
 
-    /* KVKK Buton & Metin Linki */
     .kvkk-bar {
       margin-top: 18px;
       padding-top: 14px;
@@ -145,7 +135,6 @@
       font-weight: 600;
     }
 
-    /* KVKK Modal Penceresi */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -196,25 +185,23 @@
 <body>
 
   <div class="card">
-    <div class="logo-tag">Kıtalar Akvaryumu</div>
+    <!-- Kurumsal Logo (logo.png dosyasından çeker) -->
+    <img src="logo.png" alt="Körfez Aqua Logo" class="brand-logo" onerror="this.style.display='none'">
+    
     <h1>KÖRFEZ AQUA</h1>
     <p class="sub">Dijital Hatıra Fotoğrafınız Hazır!</p>
 
     <div id="content">
-      <!-- iOS Talimatı -->
       <div id="iosTip" class="ios-tip">
         📲 <strong>iPhone / iPad:</strong> Fotoğrafın üzerine <strong>basılı tutun</strong> ve <strong>"Fotoğraflara Ekle"</strong> seçeneğini seçin.
       </div>
 
-      <!-- Fotoğraf -->
       <div class="img-container">
         <img id="photo" src="" alt="Hatıra Fotoğrafı">
       </div>
 
-      <!-- Android / PC İndirme Butonu -->
       <button id="androidBtn" class="btn-download">Fotoğrafı Cihaza İndir</button>
 
-      <!-- KVKK Güvenlik Notu -->
       <div class="kvkk-bar">
         🔒 Bu görsel yalnızca teslimat amacıyla geçici olarak işlenmektedir. 
         <span class="kvkk-link" onclick="openKvkk()">KVKK Aydınlatma Metni</span>
@@ -226,7 +213,6 @@
     </div>
   </div>
 
-  <!-- KVKK Pop-up Modal -->
   <div id="kvkkModal" class="modal-backdrop" onclick="closeKvkk()">
     <div class="kvkk-box" onclick="event.stopPropagation()">
       <h3>KVKK Aydınlatma Metni</h3>
