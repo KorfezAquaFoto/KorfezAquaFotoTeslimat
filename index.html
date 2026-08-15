@@ -2,256 +2,335 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Hatıra Fotoğrafınız</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akvaryum Hatırası - Fotoğraf İndir</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
-      background: radial-gradient(circle at 50% 10%, #0d2b45 0%, #05182e 50%, #020b14 100%);
-      color: #fff;
+      background-color: #030a16;
+      color: #ffffff;
       min-height: 100vh;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px 16px;
-      text-align: center;
       position: relative;
-      overflow-x: hidden;
     }
 
-    body::before {
-      content: '';
-      position: absolute;
-      top: -30%;
-      left: 50%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(72, 202, 228, 0.18), transparent 70%);
-      transform: translateX(-50%);
+    /* Arka Plan Canvas (Bulutsu Dalgalar & Balıklar) */
+    #aquariumCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
       pointer-events: none;
     }
 
-    .card {
-      background: rgba(13, 27, 49, 0.88);
-      border: 1px solid rgba(72, 202, 228, 0.25);
-      backdrop-filter: blur(14px);
-      padding: 24px 18px;
-      border-radius: 28px;
-      max-width: 440px;
-      width: 100%;
-      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.7);
+    /* Ana Konteyner */
+    .container {
       position: relative;
-      z-index: 1;
+      z-index: 10;
+      width: 92%;
+      max-width: 460px;
+      padding: 24px 20px;
+      margin: 20px auto;
+      background: rgba(8, 24, 48, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(64, 224, 208, 0.25);
+      border-radius: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
+                  0 0 40px rgba(0, 195, 255, 0.15);
+      text-align: center;
     }
 
-    .brand-logo {
-      max-width: 200px;
-      height: auto;
-      margin: 0 auto 14px auto;
-      display: block;
-      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+    /* Başlık */
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #00f2fe, #4facfe, #00c9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
     }
 
-    .welcome-text {
-      font-size: 14px;
-      color: #e2e8f0;
-      line-height: 1.4;
-      margin-bottom: 14px;
+    .brand-subtitle {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 18px;
     }
 
-    .img-container {
+    /* Fotoğraf Çerçevesi */
+    .photo-wrapper {
       position: relative;
       width: 100%;
       border-radius: 18px;
       overflow: hidden;
-      background: #020617;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-      margin-bottom: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(0, 242, 254, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    img#photo {
+    .photo-wrapper img {
       width: 100%;
       height: auto;
       display: block;
-      -webkit-touch-callout: default;
+      transition: transform 0.3s ease;
     }
 
-    /* iPhone Özel Rehber */
-    .ios-box {
-      display: none;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px dashed #38bdf8;
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 14px;
-      font-size: 13px;
-      color: #e0f2fe;
-      line-height: 1.4;
-      text-align: left;
+    /* Yükleniyor Animasyonu */
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #00f2fe;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      animation: spin 0.8s linear infinite;
     }
 
-    .btn-action {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #0077b6, #0096c7, #38bdf8);
-      color: #fff;
-      border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
-      transition: transform 0.15s ease;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    .btn-action:active { transform: scale(0.98); }
 
-    .footer-section {
+    /* 1 Saatlik Silinme Uyarısı */
+    .timer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .footer-slogan {
-      font-size: 12px;
-      color: #90e0ef;
+      padding: 6px 14px;
+      background: rgba(255, 75, 75, 0.15);
+      border: 1px solid rgba(255, 75, 75, 0.35);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      color: #ff9b9b;
       font-weight: 500;
-      margin-bottom: 6px;
-    }
-    .kvkk-info {
-      font-size: 11px;
-      color: #64748b;
-      line-height: 1.4;
     }
 
-    .error-box {
-      display: none;
-      color: #f87171;
-      font-size: 14px;
-      padding: 20px;
+    .timer-badge span.pulse-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #ff4b4b;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    /* İndir Butonu */
+    .download-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 15px;
+      margin-top: 18px;
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      color: #031427;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 242, 254, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .download-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <img src="logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
-    
-    <p class="welcome-text">Hatıra fotoğrafınız hazır!</p>
+  <!-- Efekt Katmanı (Bulutsu Işıklar, Dalgalar ve Yüzen Balıklar) -->
+  <canvas id="aquariumCanvas"></canvas>
 
-    <div id="content">
-      <div class="img-container">
-        <img id="photo" src="" alt="Hatıra Fotoğrafı">
-      </div>
+  <div class="container">
+    <div class="brand-title">DENİZ DÜNYASI MACERASI</div>
+    <div class="brand-subtitle">Özel Anı Fotoğrafınız</div>
 
-      <!-- iOS Rehber Kutusu -->
-      <div id="iosBox" class="ios-box">
-        💡 <strong>iPhone Kullanıcıları:</strong><br>
-        Butona bastıktan sonra açılan menüden <strong>"Görüntüyü Kaydet"</strong> seçeneğine tıklayın.
-      </div>
-
-      <button id="mainBtn" class="btn-action">Fotoğrafı İndir</button>
-
-      <div class="footer-section">
-        <div class="footer-slogan">Bizi ziyaret ettiğiniz için teşekkür ederiz. 🌊</div>
-        <div class="kvkk-info">🔒 KVKK gereği fotoğrafınız güvenliğiniz için 1 saat sonra otomatik olarak silinecektir.</div>
-      </div>
+    <div class="photo-wrapper" id="photoContainer">
+      <div class="loader" id="loader"></div>
+      <img id="userPhoto" style="display: none;" alt="Fotoğrafınız" />
     </div>
 
-    <div id="errorMsg" class="error-box">
-      Geçersiz veya süresi dolmuş fotoğraf bağlantısı.
+    <div class="timer-badge">
+      <span class="pulse-dot"></span>
+      <span>Fotoğrafınız <strong>1 saat</strong> sonra silinecektir</span>
     </div>
+
+    <a href="#" id="downloadLink" class="download-btn" download="akvaryum_hatira.jpg">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Fotoğrafı İndir (HD)
+    </a>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const imgUrl = params.get('img');
+    // 1. URL'DEN FOTOĞRAFI YÜKLEME (Örn: index.html?id=foto_123.jpg)
+    const urlParams = new URLSearchParams(window.location.search);
+    const photoId = urlParams.get('id') || 'sample.jpg'; // Parametre yoksa örnek dosya
+    
+    const photoImg = document.getElementById('userPhoto');
+    const downloadBtn = document.getElementById('downloadLink');
+    const loader = document.getElementById('loader');
 
-    if (imgUrl) {
-      const decodedUrl = decodeURIComponent(imgUrl);
-      const photoEl = document.getElementById('photo');
-      const mainBtn = document.getElementById('mainBtn');
-      const iosBox = document.getElementById('iosBox');
+    // Görsel yolu (Repo içindeki fotoğraflar klasörü)
+    const photoUrl = 'photos/' + photoId;
+    photoImg.src = photoUrl;
+    downloadBtn.href = photoUrl;
 
-      photoEl.src = decodedUrl;
+    photoImg.onload = function() {
+      loader.style.display = 'none';
+      photoImg.style.display = 'block';
+    };
 
-      // Kesin iOS Tespiti
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // 2. CANVAS ANİMASYONU (BULUTSU DALGALAR, IŞIKLAR, BALIKLAR, KABARCIKLAR)
+    const canvas = document.getElementById('aquariumCanvas');
+    const ctx = canvas.getContext('2d');
 
-      if (isIOS) {
-        // --- iPHONE / iPAD MANTIĞI ---
-        iosBox.style.display = 'block';
-        mainBtn.innerText = "Fotoğrafı Galeriye Kaydet";
-
-        mainBtn.onclick = async () => {
-          try {
-            mainBtn.innerText = "Hazırlanıyor...";
-            const response = await fetch(decodedUrl);
-            const blob = await response.blob();
-            const file = new File([blob], 'HatiraFoto.jpg', { type: 'image/jpeg' });
-
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              await navigator.share({ files: [file], title: 'Hatıra Fotoğrafı' });
-              mainBtn.innerText = "Fotoğraf Kaydedildi! ✨";
-            } else {
-              window.open(decodedUrl, '_blank');
-            }
-          } catch (e) {
-            if (e.name !== 'AbortError') {
-              window.open(decodedUrl, '_blank');
-            }
-          } finally {
-            setTimeout(() => { mainBtn.innerText = "Fotoğrafı Galeriye Kaydet"; }, 2000);
-          }
-        };
-
-      } else {
-        // --- ANDROID & BİLGİSAYAR MANTIĞI (DOĞRUDAN İNDİRME) ---
-        mainBtn.innerText = "Fotoğrafı İndir";
-
-        mainBtn.onclick = async () => {
-          try {
-            mainBtn.innerText = "İndiriliyor...";
-            mainBtn.disabled = true;
-
-            const res = await fetch(decodedUrl);
-            const blob = await res.blob();
-            const blobUrl = window.URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = blobUrl;
-            a.download = 'HatiraFoto.jpg';
-            document.body.appendChild(a);
-            a.click();
-            
-            setTimeout(() => {
-              document.body.removeChild(a);
-              window.URL.revokeObjectURL(blobUrl);
-              mainBtn.innerText = "Fotoğraf İndirildi! 🎉";
-              mainBtn.disabled = false;
-            }, 500);
-
-          } catch (err) {
-            // Fetch engeli olursa standart indirme linki tetikle
-            const a = document.createElement('a');
-            a.href = decodedUrl;
-            a.download = 'HatiraFoto.jpg';
-            a.target = '_blank';
-            a.click();
-            mainBtn.innerText = "Fotoğraf İndir";
-            mainBtn.disabled = false;
-          }
-        };
-      }
-
-    } else {
-      document.getElementById('content').style.display = 'none';
-      document.getElementById('errorMsg').style.display = 'block';
+    let width, height;
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
     }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Renkli Tropikal Balık Nesneleri
+    const fishes = [
+      { x: -50, y: height * 0.25, speed: 1.2, size: 28, color: '#ff6b35', finColor: '#ffffff', waveOffset: 0 },
+      { x: -80, y: height * 0.45, speed: 0.8, size: 22, color: '#ffd166', finColor: '#06d6a0', waveOffset: 2 },
+      { x: width + 50, y: height * 0.7, speed: -1.0, size: 26, color: '#00b4d8', finColor: '#90e0ef', waveOffset: 4 },
+      { x: -100, y: height * 0.82, speed: 1.4, size: 20, color: '#ff007f', finColor: '#7209b7', waveOffset: 1 }
+    ];
+
+    // Yükselen Kabarcıklar
+    const bubbles = Array.from({ length: 18 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 4 + 2,
+      speed: Math.random() * 1 + 0.6,
+      wobble: Math.random() * Math.PI * 2
+    }));
+
+    let waveTick = 0;
+
+    function drawFish(f) {
+      ctx.save();
+      ctx.translate(f.x, f.y + Math.sin(waveTick + f.waveOffset) * 12);
+      if (f.speed < 0) ctx.scale(-1, 1); // Ters yöne yüzüyorsa aynala
+
+      const s = f.size;
+
+      // Gövde
+      ctx.fillStyle = f.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, s, s * 0.55, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Kuyruk
+      ctx.fillStyle = f.finColor;
+      ctx.beginPath();
+      ctx.moveTo(-s * 0.8, 0);
+      ctx.lineTo(-s * 1.4, -s * 0.45);
+      ctx.lineTo(-s * 1.4, s * 0.45);
+      ctx.closePath();
+      ctx.fill();
+
+      // Sırt Yüzgeci
+      ctx.beginPath();
+      ctx.moveTo(-s * 0.2, -s * 0.5);
+      ctx.quadraticCurveTo(0, -s * 0.9, s * 0.3, -s * 0.4);
+      ctx.fill();
+
+      // Göz
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(s * 0.5, -s * 0.1, s * 0.16, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(s * 0.54, -s * 0.1, s * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      waveTick += 0.025;
+
+      // 1. Bulutsu Okyanus Işık Dalgaları (Nebula Glows)
+      const grad1 = ctx.createRadialGradient(
+        width * 0.2 + Math.sin(waveTick * 0.5) * 80, height * 0.3, 10,
+        width * 0.2, height * 0.3, width * 0.8
+      );
+      grad1.addColorStop(0, 'rgba(0, 242, 254, 0.18)');
+      grad1.addColorStop(1, 'rgba(3, 10, 22, 0)');
+      ctx.fillStyle = grad1;
+      ctx.fillRect(0, 0, width, height);
+
+      const grad2 = ctx.createRadialGradient(
+        width * 0.8 + Math.cos(waveTick * 0.4) * 60, height * 0.75, 10,
+        width * 0.8, height * 0.75, width * 0.7
+      );
+      grad2.addColorStop(0, 'rgba(114, 9, 183, 0.15)');
+      grad2.addColorStop(1, 'rgba(3, 10, 22, 0)');
+      ctx.fillStyle = grad2;
+      ctx.fillRect(0, 0, width, height);
+
+      // 2. Kabarcıkları Çiz
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      bubbles.forEach(b => {
+        b.y -= b.speed;
+        b.wobble += 0.03;
+        const currentX = b.x + Math.sin(b.wobble) * 8;
+        if (b.y < -10) { b.y = height + 10; b.x = Math.random() * width; }
+
+        ctx.beginPath();
+        ctx.arc(currentX, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      // 3. Balıkları Yürüt & Çiz
+      fishes.forEach(f => {
+        f.x += f.speed;
+        if (f.speed > 0 && f.x > width + 100) f.x = -80;
+        if (f.speed < 0 && f.x < -100) f.x = width + 80;
+        drawFish(f);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
   </script>
 </body>
 </html>
