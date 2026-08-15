@@ -21,6 +21,18 @@
       overflow-x: hidden;
     }
 
+    body::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: 50%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(72, 202, 228, 0.18), transparent 70%);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
     .card {
       background: rgba(13, 27, 49, 0.88);
       border: 1px solid rgba(72, 202, 228, 0.25);
@@ -67,7 +79,7 @@
       -webkit-touch-callout: default;
     }
 
-    /* iPhone Özel Rehber Kutucuğu */
+    /* iPhone Özel Rehber */
     .ios-box {
       display: none;
       background: rgba(56, 189, 248, 0.12);
@@ -134,12 +146,13 @@
         <img id="photo" src="" alt="Hatıra Fotoğrafı">
       </div>
 
+      <!-- iOS Rehber Kutusu -->
       <div id="iosBox" class="ios-box">
-        💡 <strong>iPhone Galeriye Kaydetme:</strong><br>
-        Aşağıdaki butona basıp açılan menüden <strong>"Görüntüyü Kaydet"</strong> seçeneğine tıklayın.
+        💡 <strong>iPhone Kullanıcıları:</strong><br>
+        Butona bastıktan sonra açılan menüden <strong>"Görüntüyü Kaydet"</strong> seçeneğine tıklayın.
       </div>
 
-      <button id="saveBtn" class="btn-action">Fotoğrafı Galeriye Kaydet</button>
+      <button id="mainBtn" class="btn-action">Fotoğrafı İndir</button>
 
       <div class="footer-section">
         <div class="footer-slogan">Bizi ziyaret ettiğiniz için teşekkür ederiz. 🌊</div>
@@ -159,53 +172,81 @@
     if (imgUrl) {
       const decodedUrl = decodeURIComponent(imgUrl);
       const photoEl = document.getElementById('photo');
-      const saveBtn = document.getElementById('saveBtn');
+      const mainBtn = document.getElementById('mainBtn');
       const iosBox = document.getElementById('iosBox');
 
       photoEl.src = decodedUrl;
 
+      // Kesin iOS Tespiti
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
       if (isIOS) {
+        // --- iPHONE / iPAD MANTIĞI ---
         iosBox.style.display = 'block';
-      }
+        mainBtn.innerText = "Fotoğrafı Galeriye Kaydet";
 
-      saveBtn.onclick = async () => {
-        try {
-          saveBtn.innerText = "Hazırlanıyor...";
-          saveBtn.disabled = true;
+        mainBtn.onclick = async () => {
+          try {
+            mainBtn.innerText = "Hazırlanıyor...";
+            const response = await fetch(decodedUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'HatiraFoto.jpg', { type: 'image/jpeg' });
 
-          const response = await fetch(decodedUrl);
-          const blob = await response.blob();
-          const file = new File([blob], 'HatiraFoto.jpg', { type: 'image/jpeg' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ files: [file], title: 'Hatıra Fotoğrafı' });
+              mainBtn.innerText = "Fotoğraf Kaydedildi! ✨";
+            } else {
+              window.open(decodedUrl, '_blank');
+            }
+          } catch (e) {
+            if (e.name !== 'AbortError') {
+              window.open(decodedUrl, '_blank');
+            }
+          } finally {
+            setTimeout(() => { mainBtn.innerText = "Fotoğrafı Galeriye Kaydet"; }, 2000);
+          }
+        };
 
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: 'Hatıra Fotoğrafı'
-            });
-            saveBtn.innerText = "Fotoğraf Kaydedildi! ✨";
-          } else {
+      } else {
+        // --- ANDROID & BİLGİSAYAR MANTIĞI (DOĞRUDAN İNDİRME) ---
+        mainBtn.innerText = "Fotoğrafı İndir";
+
+        mainBtn.onclick = async () => {
+          try {
+            mainBtn.innerText = "İndiriliyor...";
+            mainBtn.disabled = true;
+
+            const res = await fetch(decodedUrl);
+            const blob = await res.blob();
             const blobUrl = window.URL.createObjectURL(blob);
+            
             const a = document.createElement('a');
+            a.style.display = 'none';
             a.href = blobUrl;
             a.download = 'HatiraFoto.jpg';
             document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(blobUrl);
-            saveBtn.innerText = "Fotoğraf İndirildi! ✨";
+            
+            setTimeout(() => {
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(blobUrl);
+              mainBtn.innerText = "Fotoğraf İndirildi! 🎉";
+              mainBtn.disabled = false;
+            }, 500);
+
+          } catch (err) {
+            // Fetch engeli olursa standart indirme linki tetikle
+            const a = document.createElement('a');
+            a.href = decodedUrl;
+            a.download = 'HatiraFoto.jpg';
+            a.target = '_blank';
+            a.click();
+            mainBtn.innerText = "Fotoğraf İndir";
+            mainBtn.disabled = false;
           }
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            window.open(decodedUrl, '_blank');
-          }
-          saveBtn.innerText = "Fotoğrafı Galeriye Kaydet";
-        } finally {
-          saveBtn.disabled = false;
-        }
-      };
+        };
+      }
 
     } else {
       document.getElementById('content').style.display = 'none';
