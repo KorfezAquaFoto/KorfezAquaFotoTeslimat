@@ -2,70 +2,112 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Körfez Aqua - Fotoğrafınız Hazır</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Körfez Aqua - Hatıra Fotoğrafınız</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     body {
-      background: radial-gradient(circle at top, #0f2744, #050d1a);
+      background: radial-gradient(circle at top, #0c1b33, #050d1a);
       color: #fff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       text-align: center;
     }
     .card {
-      background: rgba(11, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid #1e3a5f;
-      padding: 25px;
-      border-radius: 20px;
-      max-width: 480px;
+      padding: 24px 20px;
+      border-radius: 24px;
+      max-width: 440px;
       width: 100%;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
     }
-    h1 { font-size: 26px; color: #48CAE4; margin-bottom: 5px; }
-    p { font-size: 14px; color: #90E0EF; margin-bottom: 20px; }
+    h1 { font-size: 24px; color: #48CAE4; letter-spacing: 0.5px; margin-bottom: 4px; }
+    p.sub { font-size: 13px; color: #90E0EF; margin-bottom: 18px; }
+
     .img-container {
+      position: relative;
       width: 100%;
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
-      margin-bottom: 20px;
       background: #000;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      margin-bottom: 18px;
     }
-    img { width: 100%; height: auto; display: block; }
-    .btn {
-      display: block;
+    img {
       width: 100%;
+      height: auto;
+      display: block;
+      -webkit-touch-callout: default; /* iOS basılı tutmayı zorunlu aktif eder */
+    }
+
+    /* iOS Özel İpucu Kutusu */
+    .ios-tip {
+      display: none;
+      background: rgba(72, 202, 228, 0.12);
+      border: 1px dashed #48CAE4;
+      color: #caf0f8;
       padding: 14px;
-      background: #0077b6;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    .ios-tip strong { color: #fff; }
+
+    /* Android & Genel İndir Butonu */
+    .btn-download {
+      display: none;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #0077b6, #0096c7);
       color: #fff;
-      text-decoration: none;
+      border: none;
+      border-radius: 12px;
       font-size: 16px;
       font-weight: bold;
-      border-radius: 10px;
-      transition: background 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4);
     }
-    .btn:hover { background: #0096c7; }
-    .error { color: #ff6b6b; font-size: 15px; margin: 20px 0; }
+    .btn-download:active { transform: scale(0.98); }
+
+    .error-box {
+      display: none;
+      color: #ff6b6b;
+      font-size: 14px;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
     <h1>KÖRFEZ AQUA</h1>
-    <p>Hatıra Fotoğrafınız Hazır!</p>
-    
+    <p class="sub">Hatıra Fotoğrafınız Hazır!</p>
+
     <div id="content">
+      <!-- iOS Kullanıcıları için Açıklama -->
+      <div id="iosTip" class="ios-tip">
+        👉 <strong>iPhone / iPad Kullanıcıları:</strong><br>
+        Fotoğrafın üzerine <strong>basılı tutun</strong> ve çıkan menüden <strong>"Fotoğraflara Ekle"</strong> veya <strong>"Görüntüyü Kaydet"</strong> deyin.
+      </div>
+
       <div class="img-container">
         <img id="photo" src="" alt="Yükleniyor...">
       </div>
-      <a id="downloadBtn" href="" download="KorfezAquaHatira.jpg" class="btn">Fotoğrafı İndir</a>
+
+      <!-- Android / PC Kullanıcıları için İndir Butonu -->
+      <button id="androidBtn" class="btn-download">Fotoğrafı Cihaza İndir</button>
     </div>
 
-    <div id="errorMsg" class="error" style="display:none;">Geçersiz veya süresi dolmuş fotoğraf bağlantısı.</div>
+    <div id="errorMsg" class="error-box">
+      Geçersiz veya bulunamayan fotoğraf bağlantısı.
+    </div>
   </div>
 
   <script>
@@ -73,8 +115,44 @@
     const imgUrl = params.get('img');
 
     if (imgUrl) {
-      document.getElementById('photo').src = decodeURIComponent(imgUrl);
-      document.getElementById('downloadBtn').href = decodeURIComponent(imgUrl);
+      const decodedUrl = decodeURIComponent(imgUrl);
+      const photoEl = document.getElementById('photo');
+      const iosTip = document.getElementById('iosTip');
+      const androidBtn = document.getElementById('androidBtn');
+
+      photoEl.src = decodedUrl;
+
+      // Cihaz Kontrolü (iOS vs Android/Diğer)
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      if (isIOS) {
+        // iPhone/iPad: Basılı tutma talimatını göster
+        iosTip.style.display = 'block';
+      } else {
+        // Android / Windows / Mac: İndir butonunu aç
+        androidBtn.style.display = 'block';
+        androidBtn.onclick = async () => {
+          try {
+            androidBtn.innerText = "İndiriliyor...";
+            const res = await fetch(decodedUrl);
+            const blob = await res.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = 'KorfezAquaHatira.jpg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+            androidBtn.innerText = "Fotoğraf İndirildi!";
+          } catch (e) {
+            // Fetch engellenirse standart açma
+            window.open(decodedUrl, '_blank');
+          }
+        };
+      }
     } else {
       document.getElementById('content').style.display = 'none';
       document.getElementById('errorMsg').style.display = 'block';
