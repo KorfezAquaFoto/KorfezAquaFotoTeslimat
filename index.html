@@ -3,74 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Körfez Aqua - Hatıra Fotoğrafınız</title>
+  <title>Körfez Aqua - Kıtalar Akvaryumu | Hatıra Fotoğrafınız</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     
     body {
-      background: radial-gradient(circle at top, #0d2b45, #051329, #020712);
+      background: radial-gradient(circle at 50% 10%, #0d2b45 0%, #05182e 50%, #020b14 100%);
       color: #fff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px 16px;
+      padding: 24px 16px;
       text-align: center;
       position: relative;
       overflow-x: hidden;
     }
 
+    /* Akvaryum derinlik ışık efekti */
     body::before {
       content: '';
       position: absolute;
-      top: -50%;
+      top: -30%;
       left: 50%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(72, 202, 228, 0.15), transparent 70%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(72, 202, 228, 0.18), transparent 70%);
       transform: translateX(-50%);
       pointer-events: none;
-      animation: pulseGlow 8s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulseGlow {
-      0% { opacity: 0.4; transform: translateX(-50%) scale(0.9); }
-      100% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
     }
 
     .card {
-      background: rgba(15, 29, 54, 0.85);
-      border: 1px solid rgba(72, 202, 228, 0.3);
-      backdrop-filter: blur(12px);
-      padding: 26px 20px;
-      border-radius: 26px;
+      background: rgba(13, 27, 49, 0.88);
+      border: 1px solid rgba(72, 202, 228, 0.25);
+      backdrop-filter: blur(14px);
+      padding: 28px 22px;
+      border-radius: 28px;
       max-width: 440px;
       width: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 119, 182, 0.2);
+      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 119, 182, 0.15);
       position: relative;
       z-index: 1;
     }
 
     .brand-logo {
-      max-width: 170px;
+      max-width: 190px;
       height: auto;
-      margin: 0 auto 12px auto;
+      margin: 0 auto 14px auto;
       display: block;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      margin-bottom: 12px;
+      font-weight: 700;
     }
 
     h1 {
       font-size: 24px;
-      background: linear-gradient(135deg, #ffffff, #90e0ef, #48cae4);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #90e0ef 70%, #48cae4 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 4px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
     }
 
-    p.sub { font-size: 13px; color: #caf0f8; margin-bottom: 18px; opacity: 0.9; }
+    .sub-brand {
+      font-size: 14px;
+      font-weight: 600;
+      color: #90e0ef;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .welcome-text {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
 
     .img-container {
       position: relative;
@@ -78,7 +101,7 @@
       border-radius: 18px;
       overflow: hidden;
       background: #020617;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
       margin-bottom: 18px;
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -90,88 +113,55 @@
       -webkit-touch-callout: default;
     }
 
+    /* iOS Özel Rehber */
     .ios-tip {
       display: none;
-      background: rgba(72, 202, 228, 0.1);
-      border: 1px dashed rgba(72, 202, 228, 0.6);
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px dashed rgba(56, 189, 248, 0.5);
       color: #e0f2fe;
       padding: 12px 14px;
       border-radius: 14px;
-      font-size: 13px;
+      font-size: 12.5px;
       line-height: 1.5;
       margin-bottom: 16px;
       text-align: left;
     }
     .ios-tip strong { color: #38bdf8; }
 
+    /* Android & PC İndirme Butonu */
     .btn-download {
       display: none;
       width: 100%;
       padding: 15px;
-      background: linear-gradient(135deg, #0077b6, #0096c7, #48cae4);
+      background: linear-gradient(135deg, #0077b6, #0096c7, #38bdf8);
       color: #fff;
       border: none;
       border-radius: 14px;
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 700;
+      letter-spacing: 0.5px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
+      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.35);
       transition: transform 0.15s ease;
     }
     .btn-download:active { transform: scale(0.98); }
 
-    .kvkk-bar {
+    /* Alt Bilgi & KVKK */
+    .footer-section {
       margin-top: 18px;
       padding-top: 14px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 11px;
-      color: #94a3b8;
-      line-height: 1.4;
     }
-    .kvkk-link {
-      color: #38bdf8;
-      text-decoration: underline;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.85);
-      backdrop-filter: blur(6px);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-backdrop.active { display: flex; }
-    .kvkk-box {
-      background: #0f1d36;
-      border: 1px solid #1e3a5f;
-      border-radius: 20px;
-      padding: 24px;
-      max-width: 400px;
-      max-height: 75vh;
-      overflow-y: auto;
-      text-align: left;
-      color: #cbd5e1;
+    .footer-slogan {
       font-size: 12px;
-      line-height: 1.6;
+      color: #90e0ef;
+      font-weight: 500;
+      margin-bottom: 8px;
     }
-    .kvkk-box h3 { font-size: 16px; color: #38bdf8; margin-bottom: 12px; }
-    .kvkk-box p { margin-bottom: 10px; }
-    .modal-close-btn {
-      margin-top: 15px;
-      width: 100%;
-      padding: 10px;
-      background: #0077b6;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
+    .kvkk-info {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
     }
 
     .error-box {
@@ -185,42 +175,36 @@
 <body>
 
   <div class="card">
-    <!-- Kurumsal Logo (logo.png dosyasından çeker) -->
-    <img src="logo.png" alt="Körfez Aqua Logo" class="brand-logo" onerror="this.style.display='none'">
+    <!-- Kurumsal Logo -->
+    <img src="logo.png" alt="Körfez Aqua - Kıtalar Akvaryumu" class="brand-logo" onerror="this.style.display='none'">
     
+    <div class="badge">Sualtı Dünyası Hatırası</div>
     <h1>KÖRFEZ AQUA</h1>
-    <p class="sub">Dijital Hatıra Fotoğrafınız Hazır!</p>
+    <div class="sub-brand">Kıtalar Akvaryumu</div>
+    <p class="welcome-text">Maceranızı ölümsüzleştiren hatıra fotoğrafınız hazır!</p>
 
     <div id="content">
+      <!-- iOS Kullanıcıları için -->
       <div id="iosTip" class="ios-tip">
-        📲 <strong>iPhone / iPad:</strong> Fotoğrafın üzerine <strong>basılı tutun</strong> ve <strong>"Fotoğraflara Ekle"</strong> seçeneğini seçin.
+        📲 <strong>iPhone Kullanıcıları:</strong> Fotoğrafın üzerine <strong>basılı tutarak</strong> çıkan menüden <strong>"Fotoğraflara Ekle"</strong>yi seçebilirsiniz.
       </div>
 
+      <!-- Fotoğraf -->
       <div class="img-container">
-        <img id="photo" src="" alt="Hatıra Fotoğrafı">
+        <img id="photo" src="" alt="Körfez Aqua Hatıra Fotoğrafı">
       </div>
 
-      <button id="androidBtn" class="btn-download">Fotoğrafı Cihaza İndir</button>
+      <!-- Android & PC Kullanıcıları için Buton -->
+      <button id="androidBtn" class="btn-download">Fotoğrafı Yüksek Kalitede İndir</button>
 
-      <div class="kvkk-bar">
-        🔒 Bu görsel yalnızca teslimat amacıyla geçici olarak işlenmektedir. 
-        <span class="kvkk-link" onclick="openKvkk()">KVKK Aydınlatma Metni</span>
+      <div class="footer-section">
+        <div class="footer-slogan">Bizi ziyaret ettiğiniz için teşekkür ederiz. 🌊</div>
+        <div class="kvkk-info">🔒 KVKK gereği fotoğrafınız güvenliğiniz için 1 saat sonra otomatik olarak silinecektir.</div>
       </div>
     </div>
 
     <div id="errorMsg" class="error-box">
       Geçersiz veya süresi dolmuş fotoğraf bağlantısı.
-    </div>
-  </div>
-
-  <div id="kvkkModal" class="modal-backdrop" onclick="closeKvkk()">
-    <div class="kvkk-box" onclick="event.stopPropagation()">
-      <h3>KVKK Aydınlatma Metni</h3>
-      <p><strong>Körfez Aqua</strong> olarak 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca hatıra fotoğrafı çekim hizmetimizde kişisel verilerinizin güvenliğine azami özen gösteriyoruz.</p>
-      <p><strong>1. Veri Sorumlusu:</strong> Körfez Aqua / Kıtalar Akvaryumu İşletmesi.</p>
-      <p><strong>2. İşleme Amacı:</strong> Ziyaretiniz sırasında greenbox stüdyomuzda çekilen görseliniz, yalnızca dijital teslimatın QR kod ile tarafınıza ulaştırılması amacıyla işlenir.</p>
-      <p><strong>3. Saklama Süresi:</strong> Fotoğraflarınız güvenli sunucularda geçici süreyle barındırılır ve periyodik temizlik protokolleri kapsamında otomatik olarak silinir; üçüncü şahıslarla paylaşılmaz.</p>
-      <button class="modal-close-btn" onclick="closeKvkk()">Anladım</button>
     </div>
   </div>
 
@@ -252,12 +236,12 @@
             
             const a = document.createElement('a');
             a.href = blobUrl;
-            a.download = 'KorfezAquaHatira.jpg';
+            a.download = 'KorfezAqua_HatiraFoto.jpg';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(blobUrl);
-            androidBtn.innerText = "Fotoğraf İndirildi! 🎉";
+            androidBtn.innerText = "Fotoğraf İndirildi! ✨";
           } catch (e) {
             window.open(decodedUrl, '_blank');
           }
@@ -266,13 +250,6 @@
     } else {
       document.getElementById('content').style.display = 'none';
       document.getElementById('errorMsg').style.display = 'block';
-    }
-
-    function openKvkk() {
-      document.getElementById('kvkkModal').classList.add('active');
-    }
-    function closeKvkk() {
-      document.getElementById('kvkkModal').classList.remove('active');
     }
   </script>
 </body>
